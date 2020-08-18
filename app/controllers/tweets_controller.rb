@@ -1,25 +1,31 @@
 class TweetsController < ApplicationController
   def index
     @tweets = Tweet.all.order(created_at: :desc)
-   end
- 
-   def new
-    @tweet = TweetsTag.new
-   end
+  end
 
-   def create
+  def new
+    @tweet = TweetsTag.new
+  end
+
+  def create
     @tweet = TweetsTag.new(tweet_params)
     if @tweet.valid?
       @tweet.save
       return redirect_to root_path
     else
-      render "new" 
+      render "new"
     end
-   end
+  end
+
+  def search
+    return nil if params[:input] == ""
+    tag = Tag.where(['name LIKE ?', "%#{params[:input]}%"])
+    render json:{ keyword: tag }
+  end
  
-   private
+  private
  
-   def tweet_params
-     params.require(:tweets_tag).permit(:message, :name)
-   end
+  def tweet_params
+    params.require(:tweets_tag).permit(:message, :name)
+  end
 end
